@@ -30,3 +30,15 @@
 *.exe
 *.out
 *.app
+
+/out
+bsf
+/src/Makefile
+*.json
+/.settings/language.settings.xml
+/.cproject
+/.oppbuildspec
+/.project
+/Makefile
+/BSF
+/BSF_dbg
