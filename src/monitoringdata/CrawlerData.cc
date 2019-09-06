@@ -16,7 +16,6 @@ CrawlerData::~CrawlerData() {
 }
 
 void CrawlerData::dumpEntries() {
-    std::cout << "DUMPIN!" << endl;
     std::string configname = node->par("configname"); //par("runnumber");//ev.getConfigEx()->getActiveConfigName();
 
     int runNumber = node->par("run_number"); //EV.getConfigEx()->getActiveRunNumber();//par("runid");
