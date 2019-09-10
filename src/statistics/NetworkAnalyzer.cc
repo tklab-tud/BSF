@@ -3,6 +3,7 @@
 #include <omnetpp.h>
 #include <fstream>
 #include <strings.h>
+#include <cstdlib>
 
 #include "GraphDumper.h"
 
@@ -80,9 +81,20 @@ void NetworkAnalyzer::dumpGraph() {
     int runNumber = par("run_number"); //EV.getConfigEx()->getActiveRunNumber();//par("runid");
     int num_nodes = par("total_nodes");
 
+    std::stringstream dir;
+    dir << "mkdir -p ../simulations/dumps/";
+    dir << configname;
+    dir << "/graphs/";
+    const int dir_err = system(dir.str().c_str());
+    if (-1 == dir_err){
+        std::cout << "Error creating directory" << endl;
+    }
+
     std::ofstream dumpFile;
     std::stringstream ss;
     ss << "../simulations/dumps/";
+    ss << configname;
+    ss << "/graphs/";
     ss << configname;
     ss << "-Run";
     ss << runNumber;

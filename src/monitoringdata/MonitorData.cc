@@ -46,9 +46,20 @@ void MonitorData::dumpSensorData() {
     int runNumber = node->par("run_number"); //EV.getConfigEx()->getActiveRunNumber();//par("runid");
     int num_nodes = node->par("total_nodes");
 
+    std::stringstream dir;
+    dir << "mkdir -p ../simulations/dumps/";
+    dir << configname;
+    dir << "/sensors/";
+    const int dir_err = system(dir.str().c_str());
+    if (-1 == dir_err){
+        std::cout << "Error creating directory" << endl;
+    }
+
     std::ofstream dumpFile;
     std::stringstream ss;
-    ss << "../simulations/dumps/monitor data/";
+    ss << "../simulations/dumps/";
+    ss << configname;
+    ss << "/sensors/";
     ss << configname;
     ss << "-Run";
     ss << runNumber;
