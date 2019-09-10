@@ -24,7 +24,7 @@ The current version of BSF is built and tested with [OMNeT++ version 5.4.1.](htt
 
 Please refer to the [OMNeT++ documentation](https://omnetpp.org/documentation/) for installation guidelines, tutorials and references regarding the provided functionalities.
 
-### Setting up Visualization
+### Setting up visualization components
 
 To visualize the botnet simulations, the following python packages are required:
 ```
@@ -32,6 +32,8 @@ pip install dash==1.2.0      # The core dash backend
 pip install dash-daq==0.1.0  # DAQ components (newly open-sourced!)
 
 pip install networkx
+
+pip install pandas
 ```
 
 ## Getting Started
@@ -83,8 +85,17 @@ The blocks start off with \*\* are standard outputs of OMNeT++ indicating the pr
 
 ## Visualizing Results
 
--coming soon-
+The visualization is decoupled from the simulation framework and works on top of the generated graph and monitoring log files. We have also uploaded some sample data to explore the visualizations without running the main framework.
 
+To visualize the results of the simulations you have to navigate to the *visualization* folder and call *app.py*. Afterwards open your favorite browser and open *http://127.0.0.1:8050/*. This should provide you with a graph view of one of the sample configurations looking something like this:
+
+![Visualization demo](https://github.com/tklab-tud/BSF/blob/master/resources/visualization_graph_only.png "Visualization demo")
+
+The dropdown menu in the top right of the screen allows you to choose between the results of different configurations. On the bottom of the screen you can see a timeline indicating all available snapshots of the botnet. This allows to visualize changes in the activity and connectivity of the bots. Furthermore, the menu on the right allows to visualize the information collected by crawlers or sensors. An example can be seen in the following figure, where the view of the crawler is highlighted in green.
+
+![Visualization demo](https://github.com/tklab-tud/BSF/blob/master/resources/visualization_with_crawler.png "Visualization demo")
+
+Furthermore, we are currently working on more advanced visualizations aiding the analysis of monitoring and takedown operations.
 
 ## References
 
