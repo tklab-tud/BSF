@@ -4,15 +4,15 @@ BSF provides a discrete simulation environment to implement and extend peer-to-p
 
 ## Synopsis
 
--coming soon-
+In the arms race between botmasters and defenders, the botmasters have the upper hand, as defenders have to react to actions and novel threats introduced by botmasters. The Botnet Simulation Framework (BSF) addresses this problem by leveling the playing field. It allows defenders to get ahead in the arms race by developing and evaluating new botnet monitoring techniques and countermeasures. This is crucial, as experimenting in the wild will interfere with other researchers and possibly alert botmasters. 
 
-## References
+BSF allows realistic simulation of peer-to-peer botnets to explore and study the design and impact of monitoring mechanisms and takedown attempts before being deployed in the wild. BSF is a discrete event botnet simulator that provides a set of highly configurable (and customizable) botnet features including:
+- realistic churn behavior
+- variable bot behavior
+- monitoring mechanisms (crawlers and sensors)
+- anti-monitoring mechanisms
 
-The following publications present examples on the use cases of BSF:
-
-\[1\]	[Leon Böck, Emmanouil Vasilomanolakis, Jan Helge Wolf, Max Mühlhäuser: Autonomously detecting sensors in fully distributed botnets. Computers & Security 83: 1-13 (2019)](https://www.sciencedirect.com/science/article/pii/S0167404818312094)
-
-\[2\] [Leon Böck, Emmanouil Vasilomanolakis, Max Mühlhäuser, Shankar Karuppayah: Next Generation P2P Botnets: Monitoring Under Adverse Conditions. RAID 2018: 511-531](https://link.springer.com/chapter/10.1007/978-3-030-00470-5_24)
+Moreover, BSF provides an interactive visualization module to further study the outcome of a simulation. BSF is aimed at enabling researchers and defenders to study the design of the different monitoring mechanisms in the presence of anti-monitoring mechanisms [1,2,3]. Furthermore, this tool allows the users to explore and understand the impact of design choices of botnets seen to date.
 
 ## Installation
 
@@ -86,5 +86,14 @@ The blocks start off with \*\* are standard outputs of OMNeT++ indicating the pr
 -coming soon-
 
 
+## References
+
+The following publications present examples on the use cases of BSF:
+
+\[1\]	[Leon Böck, Emmanouil Vasilomanolakis, Jan Helge Wolf, Max Mühlhäuser: Autonomously detecting sensors in fully distributed botnets. Computers & Security 83: 1-13 (2019)](https://www.sciencedirect.com/science/article/pii/S0167404818312094)
+
+\[2\] [Leon Böck, Emmanouil Vasilomanolakis, Max Mühlhäuser, Shankar Karuppayah: Next Generation P2P Botnets: Monitoring Under Adverse Conditions. RAID 2018: 511-531](https://link.springer.com/chapter/10.1007/978-3-030-00470-5_24)
+
+\[3\] [Emmanouil Vasilomanolakis, Max Mühlhäuser, Jan Helge Wolf, Leon Böck, Shankar Karuppayah](https://www.youtube.com/watch?v=m4rKqdQEqSo&t=1s)
 
 
