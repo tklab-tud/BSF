@@ -1,4 +1,4 @@
-<div background-color="black" width="250" height="200" /><img align="center" src="https://github.com/tklab-tud/BSF/blob/master/resources/bsf2.jpg" alt="BSF Logo" title="BSF Logo" width="250" height="200" />
+<img align="center" src="https://github.com/tklab-tud/BSF/blob/master/resources/bsf2.jpg" alt="BSF Logo" title="BSF Logo" width="200" height="200" />
      
 # BSF - Botnet Simulation Framework
 
