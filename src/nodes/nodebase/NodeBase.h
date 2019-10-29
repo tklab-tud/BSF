@@ -32,8 +32,12 @@ protected:
     BasicSelfMsg* offline_timer_msg;
     BasicSelfMsg* come_alive_msg;
     int timeToInitialize;
+    double latency_mean;
+    double latency_stddev;
 
     simtime_t initializedAt;
+
+    cNormal latencyRng;
 
     void handleMessage(cMessage *msg);
 
@@ -55,6 +59,7 @@ public:
     void connectToUnderlay();
     void simpleSend(BasicNetworkMsg* msg, std::shared_ptr<BasicID> dst);
     void simpleSend(BasicNetworkMsg* msg, int dst);
+    simtime_t getLatency();
     bool isActive();
     void setTimeToInitialize(double time);
     virtual void sendTimeoutMsg(int dst, BasicNetworkMsg* toMsg,

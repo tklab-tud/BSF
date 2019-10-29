@@ -17,7 +17,12 @@ void NodeBase::connectToUnderlay() {
     BasicRouter *router = static_cast<BasicRouter*>(getModuleByPath(
             "BasicNetwork.BasicRouter"));
     cDelayChannel* channel = cDelayChannel::create("chan");
-    channel->setDelay(0.1);
+    latency_mean = par("latency_mean");
+    latency_stddev = par("latency_stddev");
+    if(latency_mean == 0.0){
+        channel->setDelay(0.1);
+        std::cout << "Warning! No latency stated. Using a default 100ms latency on the channel." << endl;
+    }
     gate("net_out")->connectTo(router->gate("nodes_in", getIntID()), channel);
     router->gate("nodes_out", getIntID())->connectTo(gate("net_in"));
 }
@@ -93,7 +98,7 @@ bool NodeBase::handleSelfMessage(BasicSelfMsg *msg) {
  */
 void NodeBase::simpleSend(BasicNetworkMsg* msg, std::shared_ptr<BasicID> dst) {
     msg->setDstNode(dst->getBasicID());
-    send(msg, gate("net_out"));
+    sendDelayed(msg, getLatency(), gate("net_out"));
 }
 
 /**
@@ -108,8 +113,19 @@ void NodeBase::simpleSend(BasicNetworkMsg* msg, int dst) {
         cancelAndDelete(msg);
     } else {
         msg->setDstNode(dst);
-        send(msg, gate("net_out"));
+        sendDelayed(msg, getLatency(), gate("net_out"));
     }
+}
+
+/**
+ * Method to calculate latency for sending messages
+ */
+simtime_t NodeBase::getLatency(){
+    simtime_t latency = normal(latency_mean, latency_stddev);
+    while(latency < 0.03 || latency > 10.0){                      // Empirical values taken from real world pcaps
+        latency = normal(latency_mean, latency_stddev);
+    }
+    return latency;
 }
 
 /**
