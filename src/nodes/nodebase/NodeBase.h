@@ -57,8 +57,8 @@ public:
     virtual void sendOffline();
     void setCG(ChurnBase* cg);
     void connectToUnderlay();
-    void simpleSend(BasicNetworkMsg* msg, std::shared_ptr<BasicID> dst);
-    void simpleSend(BasicNetworkMsg* msg, int dst);
+    void simpleSend(BasicNetworkMsg* msg, std::shared_ptr<BasicID> dst, simtime_t delay = 0);
+    void simpleSend(BasicNetworkMsg* msg, int dst, simtime_t delay = 0);
     simtime_t getLatency();
     bool isActive();
     void setTimeToInitialize(double time);

@@ -26,6 +26,13 @@ void SimpleBot::initialize(int stage) {
         bootstrapNodes = par("bootstrap_nodes");
         mmInterval = par("mmInterval");
         NL_return_size = par("nl_return_size");
+        delay = par("delay");
+
+        max_parallel_conns = par("max_parallel_conns");
+
+        std::shared_ptr<std::vector<std::shared_ptr<BasicID>>> neighbors;
+        mm_index = 0;
+        open_conns = 0;
 
         offline_timer_msg = new BasicSelfMsg("offline_timer");
 
@@ -47,7 +54,7 @@ void SimpleBot::initialize(int stage) {
     }
 
     if (stage == 2) {
-//        scheduleAt(timeToInitialize, init_timer);
+        //        scheduleAt(timeToInitialize, init_timer);
     }
 }
 
@@ -57,10 +64,10 @@ void SimpleBot::initialize(int stage) {
  * cleans up allocated memory at the end of a simulation
  */
 SimpleBot::~SimpleBot() {
-//    if(isActive()){
-//            std::cout << "Initialized at: " << initializedAt << endl; // DEBUG
-//            NL->dumpNL();
-//    }
+    //    if(isActive()){
+    //            std::cout << "Initialized at: " << initializedAt << endl; // DEBUG
+    //            NL->dumpNL();
+    //    }
     cancelAndDelete(offline_timer_msg);
     for (unsigned int i = 0; i < SMH.size(); i++) {
         delete SMH.at(i);
@@ -98,16 +105,48 @@ void SimpleBot::bootstrap() {
  * Update and replace entries within the neighborlist
  */
 void SimpleBot::mmCycle() {
-    std::shared_ptr<std::vector<std::shared_ptr<BasicID>>> neighbors =
-            NL->getAll();
-    for (unsigned int i = 0; i < neighbors->size(); i++) {
-        sendPing(neighbors.get()->at(i)->getBasicID());
-    }
-    if (NL->getSize() < NLMinThreshold) {
-        requestNeighbors();
-    }
+    if(open_conns == 0 && mm_index == 0){
+        neighbors = NL->getAll();
+        mm_index = neighbors->size();
 
+        simtime_t d = 0.0;
+        int conns = std::min(max_parallel_conns, mm_index);
+        for (unsigned int i = 0; i < conns; i++) {
+            d = d+std::max(0.001, normal(delay, 0.001).dbl());
+            mm_index -= 1;
+            sendPing(neighbors.get()->at(mm_index)->getBasicID(), d);
+            open_conns += 1;
+        }
+//        if (NL->getSize() < NLMinThreshold) {
+//            requestNeighbors();
+//        }
+//        std::cout << "MM Index " << mm_index << endl;
+    } else {
+        std::cout << "WARNING! New MM cycle scheduled before finishing the previous. Check your parameters!" << endl;
+        std::cout << "open_conns: " << open_conns << " mm_index " << mm_index << endl;
+    }
     ssmh->rescheduleEvents();
+}
+
+/**
+ * Handles continuation of MM requests after recieving a pong / timeout for a ping message.
+ */
+void SimpleBot::continueMM(int replyID){
+    open_conns -= 1;
+    if(replyID && NL->getSize() < NLMinThreshold){
+        sendNLReq(replyID);
+        open_conns += 1;
+    } else if(open_conns < max_parallel_conns && mm_index > 0){
+        simtime_t d = d+std::max(0.001, normal(delay, 0.001).dbl());
+        mm_index -= 1;
+        sendPing(neighbors.get()->at(mm_index)->getBasicID(), d);
+        open_conns += 1;
+    }
+}
+
+void SimpleBot::resetMM(){
+    mm_index = 0;
+    open_conns = 0;
 }
 
 /**
@@ -174,11 +213,11 @@ void SimpleBot::sendNLResp(BasicNetworkMsg* msg) {
 /**
  * Sends a ping message to the specified destination node to check if it is still responsive
  */
-void SimpleBot::sendPing(int dest) {
+void SimpleBot::sendPing(int dest, simtime_t delay) {
     PingMsg* ping = new PingMsg();
     ping->setSrcNode(getBasicID()->getBasicID());
     ping->setDstNode(dest);
-    simpleSend(ping, dest);
+    simpleSend(ping, dest, delay);
 }
 
 /**
@@ -213,6 +252,7 @@ void SimpleBot::signalChange(bool leaving) {
 
 void SimpleBot::sendOffline() {
     NodeBase::sendOffline();
+    resetMM();
     signalChange(true);
 }
 

@@ -22,6 +22,12 @@ protected:
     int NL_return_size;
     int mmInterval;
     int numInitStages() const;
+    simtime_t delay;
+
+    std::shared_ptr<std::vector<std::shared_ptr<BasicID>>> neighbors;
+    int max_parallel_conns;
+    int mm_index;
+    int open_conns;
 
     void bootstrap();
 
@@ -38,9 +44,12 @@ public:
 
     void sendNLReq(int dest);
     void sendNLResp(BasicNetworkMsg* msg);
-    void sendPing(int dest);
+    void sendPing(int dest, simtime_t delay = 0);
     void sendPong(BasicNetworkMsg* msg);
     void removeNeighbor(int peerID);
+    void continueMM(int replyID = 0);
+    void resetMM();
+
 
     void sendOffline();
 

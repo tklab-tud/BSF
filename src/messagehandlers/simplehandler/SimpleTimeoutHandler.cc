@@ -32,7 +32,7 @@ void SimpleTimeoutHandler::handleMessage(BasicNetworkMsg* msg) {
         } else if (timeout->getTimeouttype() == PONG) {
             //DO nothing
         } else if (timeout->getTimeouttype() == NL_REQ) {
-            //DO nothing
+            node->continueMM();
         } else if (timeout->getTimeouttype() == NL_RESP) {
             //DO nothing
         }
@@ -45,6 +45,7 @@ void SimpleTimeoutHandler::handleMessage(BasicNetworkMsg* msg) {
  */
 void SimpleTimeoutHandler::handlePingTimeout(NetworkTimeoutMsg* timeout) {
     node->removeNeighbor(timeout->getSrcNode());
+    node->continueMM();
 //    if(node->NL->getSize() < node->NLMinThreshold){
 //        node->requestNeighbors();
 //    }

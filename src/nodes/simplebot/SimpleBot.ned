@@ -11,4 +11,6 @@ simple SimpleBot extends NodeBase
         int nl_min_threshold;
         int bootstrap_nodes;
         int nl_return_size;
+        double delay @unit(s) = default(0ms);
+        int max_parallel_conns = default(65534);
 }

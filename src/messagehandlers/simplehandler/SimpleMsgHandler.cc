@@ -54,6 +54,7 @@ void SimpleMsgHandler::handleNLResp(BasicNetworkMsg* msg) {
     for (unsigned int i = 0; i < resp->getNeighbors()->size(); i++) {
         node->addNeighbor(resp->getNeighbors()->at(i));
     }
+    node->continueMM();
 }
 
 /**
@@ -68,4 +69,5 @@ void SimpleMsgHandler::handlePingMsg(BasicNetworkMsg* msg) {
  */
 void SimpleMsgHandler::handlePongMsg(BasicNetworkMsg* msg) {
     node->NL->update(simTime(), msg->getSrcNode());
+    node->continueMM(msg->getSrcNode());
 }

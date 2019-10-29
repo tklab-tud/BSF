@@ -79,9 +79,9 @@ bool NodeBase::handleSelfMessage(BasicSelfMsg *msg) {
     }
     if (!handled) {
         if (msg == init_timer) {
-//            setActive();
+            //            setActive();
             std::cout << "WARNING! init_time is still being used!!!" << endl;
-//            return true;
+            //            return true;
         } else if (msg == offline_timer_msg) {
             sendOffline();
             return true;
@@ -96,7 +96,7 @@ bool NodeBase::handleSelfMessage(BasicSelfMsg *msg) {
 /**
  * Sends a given msg to a given destination (BasicID) on the underlay network
  */
-void NodeBase::simpleSend(BasicNetworkMsg* msg, std::shared_ptr<BasicID> dst) {
+void NodeBase::simpleSend(BasicNetworkMsg* msg, std::shared_ptr<BasicID> dst, simtime_t delay) {
     msg->setDstNode(dst->getBasicID());
     sendDelayed(msg, getLatency(), gate("net_out"));
 }
@@ -104,11 +104,11 @@ void NodeBase::simpleSend(BasicNetworkMsg* msg, std::shared_ptr<BasicID> dst) {
 /**
  * Sends a given msg to a given destination (int) on the underlay network
  */
-void NodeBase::simpleSend(BasicNetworkMsg* msg, int dst) {
+void NodeBase::simpleSend(BasicNetworkMsg* msg, int dst, simtime_t delay) {
     if (dst == this->getBasicID()->getBasicID()) {
         std::cout
-                << "WARINING!: You are trying to send the following network message to yourself!: "
-                << endl;
+        << "WARINING!: You are trying to send the following network message to yourself!: "
+        << endl;
         std::cout << msg << endl;
         cancelAndDelete(msg);
     } else {
@@ -121,11 +121,15 @@ void NodeBase::simpleSend(BasicNetworkMsg* msg, int dst) {
  * Method to calculate latency for sending messages
  */
 simtime_t NodeBase::getLatency(){
-    simtime_t latency = normal(latency_mean, latency_stddev);
-    while(latency < 0.03 || latency > 10.0){                      // Empirical values taken from real world pcaps
-        latency = normal(latency_mean, latency_stddev);
+    if(latency_mean > 0){
+        simtime_t latency = normal(latency_mean, latency_stddev);
+        while(latency < 0.03 || latency > 10.0){                      // Empirical values taken from real world pcaps
+            latency = normal(latency_mean, latency_stddev);
+        }
+        return latency;
+    } else {
+        return 0;
     }
-    return latency;
 }
 
 /**
