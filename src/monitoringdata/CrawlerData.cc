@@ -57,8 +57,11 @@ void CrawlerData::dumpEntries() {
     dumpFile.open(file.buffer(), std::fstream::out); //will be located in folder 'simulations/dumps/' of OverSim
 
     for (int i = 0; i < num_nodes; i++) {
+        dumpFile << i << ": ";
         for (int j = 0; j < num_nodes; j++) {
-            dumpFile << adjacency[i][j] << " ";
+            if(adjacency[i][j] != 0){
+                dumpFile << j << ";" << adjacency[i][j] << " ";
+            }
         }
         dumpFile << endl;
     }
