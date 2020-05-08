@@ -21,6 +21,8 @@ public:
     void handleNLResp(BasicNetworkMsg* msg);
     void handlePingMsg(BasicNetworkMsg* msg);
     void handlePongMsg(BasicNetworkMsg* msg);
+    void handleCmdReq(BasicNetworkMsg* msg);
+    void handleCmdRep(BasicNetworkMsg* msg);
     SimpleBot* node;
 };
 

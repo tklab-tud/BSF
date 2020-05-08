@@ -13,10 +13,12 @@ enum NetworkMsgType
         BASIC_NMSG = 0;
         //PING_PONG = 1;
         TIMEOUT = 3;
-        NL_REQ = 10;
-        NL_RESP = 11;
-        PING = 4;
-        PONG = 5;
+        NL_REQ = 101;
+        NL_RESP = 102;
+        PING = 103;
+        PONG = 104;
+        CMD_REQ = 105;
+        CMD_REP = 106;
 }
 
 packet BasicNetworkMsg {

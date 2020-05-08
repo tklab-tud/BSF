@@ -8,4 +8,5 @@ packet BasicNetworkMsg;
 //
 packet PongMsg extends BasicNetworkMsg {
     type = PONG;
+    int version;
 }

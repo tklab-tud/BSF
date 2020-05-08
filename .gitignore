@@ -42,3 +42,4 @@ bsf
 /Makefile
 /BSF
 /BSF_dbg
+*.gv

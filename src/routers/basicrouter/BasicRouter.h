@@ -9,9 +9,12 @@ using namespace omnetpp;
 class BasicRouter: public cSimpleModule {
 protected:
     std::ofstream dumpFile;
+    std::ofstream cmdDumpFile;
 
     bool record_trace;
     double start_recording_trace;
+    bool record_commands;
+
 
     virtual void initialize();
     virtual ~BasicRouter();

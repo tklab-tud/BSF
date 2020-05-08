@@ -32,6 +32,7 @@ public:
     std::shared_ptr<std::vector<std::shared_ptr<BasicID>>> getBootstrapNodes(
             int num_nodes = 1);
     std::shared_ptr<BasicID> getRandomNode();
+    NodeBase* getRandomActiveNode();
     void registerNode(std::shared_ptr<BasicID> node);
 };
 

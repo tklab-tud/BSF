@@ -14,6 +14,10 @@ void CrawlerBase::updateEntry(int src, int dst, simtime_t time) {
     crawler_data->updateEntry(src, dst, SIMTIME_DBL(time));
 }
 
+void CrawlerBase::updateVersion(int node, int version, simtime_t time){
+    crawler_data->updateVersion(node, version, time);
+}
+
 void CrawlerBase::add2Q(int node) {
     if (visited.count(node) == 0 && node != -1) {
         Q.push(node);

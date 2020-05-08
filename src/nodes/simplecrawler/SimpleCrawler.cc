@@ -12,6 +12,7 @@ void SimpleCrawler::crawl() {
         for(int i = 0; i < request_per_crawl; i++){
             if(node != this->getBasicID()->getBasicID())
                 sendNLReq(node);
+                sendPing(node);
         }
         node = getNext();
     }

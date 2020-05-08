@@ -8,6 +8,10 @@
 #include "SimpleMsgHandler.h"
 #include "../../nodes/simplebot/SimpleBot.h"
 #include "../../messages/simplemessages/SimpleNLRespMsg_m.h"
+#include "../../messages/simplemessages/PongMsg_m.h"
+#include "../../messages/simplemessages/CmdReqMsg_m.h"
+#include "../../messages/simplemessages/CmdRepMsg_m.h"
+
 
 /**
  * Message handler for standard messages used by simplebot
@@ -35,6 +39,10 @@ void SimpleMsgHandler::handleMessage(BasicNetworkMsg *msg) {
             handlePingMsg(msg);
         } else if (msg->getType() == PONG) {
             handlePongMsg(msg);
+        } else if (msg->getType() == CMD_REQ) {
+            handleCmdReq(msg);
+        } else if (msg->getType() == CMD_REP) {
+            handleCmdRep(msg);
         }
     }
 }
@@ -69,5 +77,21 @@ void SimpleMsgHandler::handlePingMsg(BasicNetworkMsg* msg) {
  */
 void SimpleMsgHandler::handlePongMsg(BasicNetworkMsg* msg) {
     node->NL->update(simTime(), msg->getSrcNode());
+    PongMsg* pong = static_cast<PongMsg*>(msg);
+    if(pong->getVersion() > node->getVersion()){
+        node->sendCmdReq(msg);
+    }
     node->continueMM(msg->getSrcNode());
+}
+
+void SimpleMsgHandler::handleCmdReq(BasicNetworkMsg* msg){
+//    CmdReqMsg* req = static_cast<CmdReqMsg*>(msg);
+    node->sendCmdRep(msg);
+}
+
+void SimpleMsgHandler::handleCmdRep(BasicNetworkMsg* msg){
+    CmdRepMsg* rep = static_cast<CmdRepMsg*>(msg);
+    if(rep->getVersion() > node->getVersion()){
+        node->setVersion(rep->getVersion());
+    }
 }

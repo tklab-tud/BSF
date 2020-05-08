@@ -12,6 +12,7 @@ public:
     void handleMessage(BasicNetworkMsg *msg);
     void handleNLResp(BasicNetworkMsg* msg);
     void handlePingMsg(BasicNetworkMsg* msg);
+    void handlePongMsg(BasicNetworkMsg* msg);
 
 };
 

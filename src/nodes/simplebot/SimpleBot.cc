@@ -8,6 +8,8 @@
 #include "../../messagehandlers/simplehandler/SimpleMsgHandler.h"
 #include "../../selfmessagehandlers/simpleselfmsghandler/SimpleSelfMsgHandler.h"
 #include "../../messagehandlers/simplehandler/SimpleTimeoutHandler.h"
+#include "../../messages/simplemessages/CmdReqMsg_m.h"
+#include "../../messages/simplemessages/CmdRepMsg_m.h"
 
 Define_Module(SimpleBot);
 
@@ -47,6 +49,7 @@ void SimpleBot::initialize(int stage) {
 
         NL = std::make_shared<SimpleNL>(maxNLSize, NLMinThreshold);
         SimpleNeighbor = registerSignal("Neighbor");
+        version = 0;
     }
 
     if (stage == 1) {
@@ -113,6 +116,7 @@ void SimpleBot::mmCycle() {
         int conns = std::min(max_parallel_conns, mm_index);
         for (unsigned int i = 0; i < conns; i++) {
             d = d+std::max(0.001, normal(delay, 0.001).dbl());
+//            std::cout << "Delay:" << delay << ", " << d << endl;
             mm_index -= 1;
             sendPing(neighbors.get()->at(mm_index)->getBasicID(), d);
             open_conns += 1;
@@ -124,23 +128,25 @@ void SimpleBot::mmCycle() {
     } else {
         std::cout << "WARNING! New MM cycle scheduled before finishing the previous. Check your parameters!" << endl;
         std::cout << "open_conns: " << open_conns << " mm_index " << mm_index << endl;
+        std::cout << "Node ID " << getBasicID()->getBasicID() << " time " << simTime() << endl;
     }
-    ssmh->rescheduleEvents();
 }
 
 /**
  * Handles continuation of MM requests after recieving a pong / timeout for a ping message.
  */
 void SimpleBot::continueMM(int replyID){
-    open_conns -= 1;
-    if(replyID && NL->getSize() < NLMinThreshold){
+    if(replyID != -1 && NL->getSize() < NLMinThreshold){
         sendNLReq(replyID);
-        open_conns += 1;
     } else if(open_conns < max_parallel_conns && mm_index > 0){
         simtime_t d = d+std::max(0.001, normal(delay, 0.001).dbl());
         mm_index -= 1;
         sendPing(neighbors.get()->at(mm_index)->getBasicID(), d);
-        open_conns += 1;
+    } else {
+        open_conns -= 1;
+    }
+    if(open_conns == 0 && mm_index == 0){
+        ssmh->rescheduleEvents();
     }
 }
 
@@ -217,6 +223,7 @@ void SimpleBot::sendPing(int dest, simtime_t delay) {
     PingMsg* ping = new PingMsg();
     ping->setSrcNode(getBasicID()->getBasicID());
     ping->setDstNode(dest);
+    ping->setVersion(this->getVersion());
     simpleSend(ping, dest, delay);
 }
 
@@ -227,7 +234,29 @@ void SimpleBot::sendPong(BasicNetworkMsg* msg) {
     PongMsg* pong = new PongMsg();
     pong->setSrcNode(getBasicID()->getBasicID());
     pong->setDstNode(msg->getSrcNode());
+    pong->setVersion(this->getVersion());
     simpleSend(pong, msg->getSrcNode());
+}
+
+/**
+ * Sends a command request message if a pong included a higher version number
+ */
+void SimpleBot::sendCmdReq(BasicNetworkMsg* msg) {
+    CmdReqMsg* cmd_req = new CmdReqMsg();
+    cmd_req->setSrcNode(getBasicID()->getBasicID());
+    cmd_req->setDstNode(msg->getSrcNode());
+    simpleSend(cmd_req, msg->getSrcNode());
+}
+
+/**
+ * Sends a command reply with this bot's version number if another bot requests it
+ */
+void SimpleBot::sendCmdRep(BasicNetworkMsg* msg) {
+    CmdRepMsg* rep = new CmdRepMsg();
+    rep->setSrcNode(getBasicID()->getBasicID());
+    rep->setDstNode(msg->getSrcNode());
+    rep->setVersion(this->getVersion());
+    simpleSend(rep, msg->getSrcNode());
 }
 
 /**
@@ -253,6 +282,24 @@ void SimpleBot::signalChange(bool leaving) {
 void SimpleBot::sendOffline() {
     NodeBase::sendOffline();
     resetMM();
+//    std::cout << "Node ID " << getBasicID()->getBasicID() << " just went offline at " << simTime() << endl;
     signalChange(true);
 }
+
+void SimpleBot::inject_botmaster_msg(int version){
+    Enter_Method_Silent();
+
+    this->version = version;
+//    std::cout << "Botmaster command injected into " << this->ID->getBasicID() << " at " << simTime() << " new Version " << version << std::endl;
+}
+
+int SimpleBot::getVersion(){
+    return version;
+}
+
+void SimpleBot::setVersion(int version){
+    this->version = version;
+}
+
+
 

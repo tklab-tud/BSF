@@ -53,7 +53,20 @@ std::shared_ptr<std::vector<std::shared_ptr<BasicID>>> GlobalNodeList::getBootst
 
 std::shared_ptr<BasicID> GlobalNodeList::getRandomNode() {
     return nodeMap->at(intrand(nodeMap->size(), 0));
+}
 
+NodeBase* GlobalNodeList::getRandomActiveNode(){
+    while (true) {
+        std::shared_ptr<BasicID> node = getRandomNode();
+        std::stringstream ss;
+        ss << "BasicNetwork.Bot" << node->getBasicID();
+        std::string s = ss.str();
+        NodeBase* node_base = static_cast<NodeBase*>(getModuleByPath(
+                s.c_str()));
+        if (node_base->isActive()) {
+            return node_base;
+        }
+    }
 }
 
 void GlobalNodeList::registerNode(std::shared_ptr<BasicID> node) {

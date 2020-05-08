@@ -123,7 +123,7 @@ void NodeBase::simpleSend(BasicNetworkMsg* msg, int dst, simtime_t delay) {
 simtime_t NodeBase::getLatency(){
     if(latency_mean > 0){
         simtime_t latency = normal(latency_mean, latency_stddev);
-        while(latency < 0.03 || latency > 10.0){                      // Empirical values taken from real world pcaps
+        while(latency < 0.003 || latency > 10.0){                      // Empirical values taken from real world pcaps
             latency = normal(latency_mean, latency_stddev);
         }
         return latency;

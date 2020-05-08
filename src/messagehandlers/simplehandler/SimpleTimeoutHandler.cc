@@ -25,7 +25,7 @@ SimpleTimeoutHandler::~SimpleTimeoutHandler() {
  * Handler for simplebot timeout messages
  */
 void SimpleTimeoutHandler::handleMessage(BasicNetworkMsg* msg) {
-    if (msg->getType() == TIMEOUT) {
+    if (msg->getType() == TIMEOUT && node->isActive()) {
         NetworkTimeoutMsg* timeout = static_cast<NetworkTimeoutMsg*>(msg);
         if (timeout->getTimeouttype() == PING) {
             handlePingTimeout(timeout);

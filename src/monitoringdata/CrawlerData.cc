@@ -3,16 +3,21 @@
 
 CrawlerData::CrawlerData(NodeBase* node, int num_nodes) {
     adjacency = new double*[num_nodes];
+    versions = new int[num_nodes];
+    this->num_nodes = num_nodes;
     this->node = node;
     for (int i = 0; i < num_nodes; ++i) {
         adjacency[i] = new double[num_nodes] { 0.0 };
+        versions[i] = 0;
     }
-//    std::cout << adjacency[1][1] << endl;
+    initVersionDump();
+    //    std::cout << adjacency[1][1] << endl;
 }
 
 CrawlerData::~CrawlerData() {
     dumpEntries();
     delete adjacency;
+    delete versions;
 }
 
 void CrawlerData::dumpEntries() {
@@ -61,7 +66,44 @@ void CrawlerData::dumpEntries() {
     dumpFile.close();
 }
 
+void CrawlerData::initVersionDump(){
+    std::string configname = node->par("configname"); //par("runnumber");//ev.getConfigEx()->getActiveConfigName();
+
+    int runNumber = node->par("run_number"); //EV.getConfigEx()->getActiveRunNumber();//par("runid");
+    int num_nodes = node->par("total_nodes");
+
+    std::stringstream dir;
+    dir << "mkdir -p ../simulations/dumps/";
+    dir << configname;
+    dir << "/versions/";
+    const int dir_err = system(dir.str().c_str());
+    if (-1 == dir_err){
+        std::cout << "Error creating directory" << endl;
+    }
+
+    std::stringstream ss;
+    ss << "../simulations/dumps/";
+    ss << configname;
+    ss << "/versions/";
+    ss << configname;
+    ss << "-Run";
+    ss << runNumber;
+    ss << "Nodes";
+    ss << num_nodes;
+    ss << "Crawler";
+    ss << node->getBasicID()->getBasicID();
+    ss << ".txt";
+
+    opp_string file = ss.str().c_str();
+    versionDumps.open(file.buffer(), std::fstream::out); //will be located in folder 'simulations/dumps/' of OverSim
+    versionDumps << "Node, Version, Time" << endl;
+}
+
 void CrawlerData::updateEntry(int src, int dst, double time) {
     adjacency[src][dst] = time;
 }
 
+void CrawlerData::updateVersion(int node, int version, simtime_t time){
+    versions[node] = version;
+    versionDumps << node << ", " << version << ", "<< time <<  endl;
+}

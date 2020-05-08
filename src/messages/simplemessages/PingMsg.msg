@@ -8,4 +8,5 @@ packet BasicNetworkMsg;
 //
 packet PingMsg extends BasicNetworkMsg {
     type = PING;
+    int version;
 }

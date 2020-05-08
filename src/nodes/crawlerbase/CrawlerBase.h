@@ -30,6 +30,7 @@ public:
     CrawlerData* crawler_data;
 
     virtual void updateEntry(int src, int dst, simtime_t time);
+    virtual void updateVersion(int node, int version, simtime_t time);
     virtual int getNext();
     virtual void add2Q(int node);
     virtual void startCrawl();

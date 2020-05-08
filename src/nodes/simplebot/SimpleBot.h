@@ -28,6 +28,7 @@ protected:
     int max_parallel_conns;
     int mm_index;
     int open_conns;
+    int version;
 
     void bootstrap();
 
@@ -46,12 +47,18 @@ public:
     void sendNLResp(BasicNetworkMsg* msg);
     void sendPing(int dest, simtime_t delay = 0);
     void sendPong(BasicNetworkMsg* msg);
+    void sendCmdReq(BasicNetworkMsg* msg);
+    void sendCmdRep(BasicNetworkMsg* msg);
     void removeNeighbor(int peerID);
-    void continueMM(int replyID = 0);
+    void continueMM(int replyID = -1);
     void resetMM();
+    void inject_botmaster_msg(int version);
 
 
     void sendOffline();
+
+    int getVersion();
+    void setVersion(int version);
 
     SimpleSelfMsgHandler* ssmh;
 };

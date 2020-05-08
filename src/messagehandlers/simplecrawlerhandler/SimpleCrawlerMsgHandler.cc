@@ -3,6 +3,7 @@
 #include "../../nodes/simplecrawler/SimpleCrawler.h"
 #include "../../messages/simplemessages/SimpleNLRespMsg_m.h"
 #include "../../nodes/nodebase/NodeBase.h"
+#include "../../messages/simplemessages/PongMsg_m.h"
 
 SimpleCrawlerMsgHandler::SimpleCrawlerMsgHandler(NodeBase* owner, CrawlerBase* crawler) {
     node = static_cast<SimpleCrawler*>(owner);
@@ -26,7 +27,7 @@ void SimpleCrawlerMsgHandler::handleMessage(BasicNetworkMsg* msg) {
         } else if (msg->getType() == PING) {
             handlePingMsg(msg);
         } else if (msg->getType() == PONG) {
-            //            handlePongMsg(msg);
+            handlePongMsg(msg);
             // Ignore
         }
     }
@@ -47,4 +48,12 @@ void SimpleCrawlerMsgHandler::handleNLResp(BasicNetworkMsg* msg) {
 }
 
 void SimpleCrawlerMsgHandler::handlePingMsg(BasicNetworkMsg* msg) {
+}
+
+
+void SimpleCrawlerMsgHandler::handlePongMsg(BasicNetworkMsg* msg) {
+    PongMsg* pong = static_cast<PongMsg*>(msg);
+    std::cout << "TIME " << simTime() << endl;
+
+    crawler->updateVersion(msg->getSrcNode(), pong->getVersion(),simTime());
 }
