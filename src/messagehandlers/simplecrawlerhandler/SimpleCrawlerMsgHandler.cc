@@ -38,7 +38,9 @@ void SimpleCrawlerMsgHandler::handleNLResp(BasicNetworkMsg* msg) {
     for(auto it = nl_resp->getNeighbors()->begin(); it != nl_resp->getNeighbors()->end(); ++it) {
 //        std::cout << "NL REP: " << it->get()->getBasicID() << endl;
         crawler->updateEntry(msg->getSrcNode(), it->get()->getBasicID(), simTime());
-        crawler->add2Q(it->get()->getBasicID());
+        if(it->get()->getBasicID() != node->ID->getBasicID()){
+            crawler->add2Q(it->get()->getBasicID());
+        }
     }
 //    for (unsigned int i = 0; i < nl_resp->getNeighbors()->size(); i++) {
 //        //        node->addNeighbor(resp->getNeighbors()->at(i));
@@ -53,7 +55,5 @@ void SimpleCrawlerMsgHandler::handlePingMsg(BasicNetworkMsg* msg) {
 
 void SimpleCrawlerMsgHandler::handlePongMsg(BasicNetworkMsg* msg) {
     PongMsg* pong = static_cast<PongMsg*>(msg);
-    std::cout << "TIME " << simTime() << endl;
-
     crawler->updateVersion(msg->getSrcNode(), pong->getVersion(),simTime());
 }

@@ -5,6 +5,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import os
 import plotly.graph_objs as go
+from natsort import natsorted as ns
 
 import networkx as nx
 
@@ -102,7 +103,7 @@ for root, dirs, files in os.walk(folder):
             sensor_files.append(file)
 
     figures = {}
-    for file in graph_files:
+    for file in ns(graph_files):
         # Create graph
         print("Load graphviz file: ", file)
         nx_graph = GraphUtil.init_multidigraph(file)
@@ -116,26 +117,25 @@ for root, dirs, files in os.walk(folder):
 
     print("Load Crawler files")
     crawler_ids = []
-    for file in crawler_files:
+    for file in ns(crawler_files):
         crawler_ids.append(crawler_id(file))
     crawler_ids = set(crawler_ids)
 
     crawler = {}
     for id in crawler_ids:
         snapshot = {}
-        for file in crawler_files:
+        for file in ns(crawler_files):
             if id == crawler_id(file):
                 crawler_nodes = []
                 timestamp = snapshot_time(file)
                 i = 0
                 for line in open(file):
-                    for entry in line.split(' '):
-                        if '0' not in entry and entry != '\n':
-                            crawler_nodes.append(i)
-                            break
+                    entry = line.split(';')
+                    if len(entry) > 1:               
+                        crawler_nodes.append(i)
                     i += 1
                 snapshot.update({int(timestamp): crawler_nodes})
-        snapshot = dict(sorted(snapshot.items()))
+        #snapshot = dict(sorted(snapshot.items()))
         crawler.update({id: snapshot})
 
     if crawler:
@@ -192,6 +192,7 @@ app.layout = html.Div(children=[
 def update_graph(snapshot_value, options, dir_param):
     figures = []
     if dir_param:
+        print("GRAPH", dir_param)
         for fig in fig_to_dir[dir_param].values():
             figures.append(fig)
     if snapshot_value > len(figures):
@@ -211,7 +212,10 @@ def update_graph(snapshot_value, options, dir_param):
                 id_dict[id] = pos
                 pos += 1
             for crawler in crawler_to_dir[dir_param].values():
-                crawled_nodes = list(crawler.values())[snapshot_value-1]
+                if snapshot_value > len(crawler.values()):
+                    crawled_nodes = list(crawler.values())[snapshot_value-1-len(crawler.values())]
+                else: 
+                    crawled_nodes = []    
                 print("crawled nodes:", crawled_nodes)
                 for node in crawled_nodes:
                     if str(node) in id_dict.keys():

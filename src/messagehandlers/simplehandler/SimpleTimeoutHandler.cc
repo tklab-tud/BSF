@@ -44,7 +44,8 @@ void SimpleTimeoutHandler::handleMessage(BasicNetworkMsg* msg) {
  * queries for new neighbors if the NL size is below NLMinThreshold
  */
 void SimpleTimeoutHandler::handlePingTimeout(NetworkTimeoutMsg* timeout) {
-    node->removeNeighbor(timeout->getSrcNode());
+//    node->removeNeighbor(timeout->getSrcNode()); TODO remove
+    node->NL->getEntry(timeout->getSrcNode())->increase_missed_replies();
     node->continueMM();
 //    if(node->NL->getSize() < node->NLMinThreshold){
 //        node->requestNeighbors();

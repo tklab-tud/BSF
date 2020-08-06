@@ -28,12 +28,16 @@ bool CrawlerSelfMsgHandler::handleSelfMessage(BasicSelfMsg* msg) {
         }
         return true;
     } else if (msg == crawler->crawl_dump_msg) {
-        crawler->crawler_data->dumpEntries();
+        if (simTime() > startTime) {
+
+            crawler->crawler_data->dumpEntries();
+        }
         double normalize = std::round(
                 1 + SIMTIME_DBL(simTime() / crawler->crawl_dump_timeout));
         node->scheduleAt(0 + normalize * crawler->crawl_dump_timeout,
                 crawler->crawl_dump_msg);
         return true;
+
     }
     return false;
 }

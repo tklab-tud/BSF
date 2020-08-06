@@ -52,7 +52,9 @@ public:
     void removeNeighbor(int peerID);
     void continueMM(int replyID = -1);
     void resetMM();
+    void cleanNL();
     void inject_botmaster_msg(int version);
+
 
 
     void sendOffline();

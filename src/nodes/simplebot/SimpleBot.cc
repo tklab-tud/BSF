@@ -109,6 +109,7 @@ void SimpleBot::bootstrap() {
  */
 void SimpleBot::mmCycle() {
     if(open_conns == 0 && mm_index == 0){
+        cleanNL();
         neighbors = NL->getAll();
         mm_index = neighbors->size();
 
@@ -136,7 +137,7 @@ void SimpleBot::mmCycle() {
  * Handles continuation of MM requests after recieving a pong / timeout for a ping message.
  */
 void SimpleBot::continueMM(int replyID){
-    if(replyID != -1 && NL->getSize() < NLMinThreshold){
+    if(replyID != -1 && NL->getSize() < maxNLSize){
         sendNLReq(replyID);
     } else if(open_conns < max_parallel_conns && mm_index > 0){
         simtime_t d = d+std::max(0.001, normal(delay, 0.001).dbl());
@@ -148,6 +149,22 @@ void SimpleBot::continueMM(int replyID){
     if(open_conns == 0 && mm_index == 0){
         ssmh->rescheduleEvents();
     }
+}
+
+void SimpleBot::cleanNL(){
+    neighbors = NL->getAll();
+    int nl_size = neighbors->size();
+    int i = 0;
+    while(i < nl_size) {
+        std::shared_ptr<SimpleEntry> neighbor = NL->getEntry(neighbors->at(i)->getBasicID());
+        if(neighbor->get_missed_replies() >= 3){
+            removeNeighbor(neighbor->getId()->getBasicID());
+//            std::cout << "DELTING " << neighbor->getId()->getBasicID() << endl;
+            nl_size--;
+        }
+        i++;
+    }
+    signalChange(false);
 }
 
 void SimpleBot::resetMM(){
@@ -172,6 +189,7 @@ void SimpleBot::requestNeighbors() {
 void SimpleBot::addNeighbor(std::shared_ptr<BasicID> peer) {
     if (peer->getBasicID() != getBasicID()->getBasicID()) {
         NL->addPeer(peer);
+        signalChange(false);
     }
 }
 
@@ -179,8 +197,7 @@ void SimpleBot::addNeighbor(std::shared_ptr<BasicID> peer) {
  * Removes the specified node from the neighborlist
  */
 void SimpleBot::removeNeighbor(int peerID) {
-    if (NL->getEntry(peerID)->get_missed_replies() > 5)
-        NL->removePeer(peerID);
+    NL->removePeer(peerID);
 }
 
 /**

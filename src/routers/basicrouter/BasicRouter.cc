@@ -28,6 +28,8 @@ void BasicRouter::initialize() {
         ss << "./cmd_traces/"<< configname << runNumber << "_cmd-trace.txt";
         opp_string file = ss.str().c_str();
         cmdDumpFile.open(file.buffer(), std::fstream::out);
+        cmdDumpFile <<  "Src , " <<  "Dst, " << "Timestamp, " << "Version" << endl;
+
     }
 }
 
@@ -46,7 +48,7 @@ void BasicRouter::handleMessage(cMessage *msg) {
 
     if(record_commands && (n_msg->getType()==CMD_REP)){
         CmdRepMsg* rep = static_cast<CmdRepMsg*>(n_msg);
-        cmdDumpFile << "Src: " << n_msg->getSrcNode() << ", Dst: " << n_msg->getDstNode() << ", Type: " << n_msg->getType() << ", Time: " << simTime()  << ", Version: " << rep->getVersion() << endl;
+        cmdDumpFile << n_msg->getSrcNode() << ", " <<  n_msg->getDstNode() << ", " << simTime()  << ", " << rep->getVersion() << endl;
     }
 
     send(n_msg, gate("nodes_out", n_msg->getDstNode()));
